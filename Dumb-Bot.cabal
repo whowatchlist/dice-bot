@@ -25,7 +25,7 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Roller
   other-modules:
       Paths_Dumb_Bot
   hs-source-dirs:
@@ -34,6 +34,7 @@ library
       base >=4.7 && <5
     , containers
     , discord-haskell
+    , megaparsec
     , random
     , text
     , unliftio
@@ -42,7 +43,6 @@ library
 executable Dumb-Bot-exe
   main-is: Main.hs
   other-modules:
-      Roller
       Paths_Dumb_Bot
   hs-source-dirs:
       app
@@ -52,6 +52,7 @@ executable Dumb-Bot-exe
     , base >=4.7 && <5
     , containers
     , discord-haskell
+    , megaparsec
     , random
     , text
     , unliftio
@@ -70,6 +71,7 @@ test-suite Dumb-Bot-test
     , base >=4.7 && <5
     , containers
     , discord-haskell
+    , megaparsec
     , random
     , text
     , unliftio

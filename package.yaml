@@ -26,6 +26,7 @@ dependencies:
 - unliftio
 - random
 - containers
+- megaparsec
 
 
 library:

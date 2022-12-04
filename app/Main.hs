@@ -8,13 +8,14 @@ import qualified Data.Text.IO as TIO
 import Discord
 import qualified Discord.Requests as R
 import Discord.Types
-import Roller (applyRolls, getRoll, isValidRoll)
+import Roller (parseRoll, runRoll)
+import Text.Megaparsec (errorBundlePretty)
+import UnliftIO (liftIO)
 import UnliftIO.Concurrent
 
 main :: IO ()
 main = startClient
 
--- | Replies "pong" to every message that starts with "ping"
 startClient :: IO ()
 startClient = do
   token <- TIO.readFile "token.txt"
@@ -32,41 +33,13 @@ startClient = do
 
 eventHandler :: Event -> DiscordHandler ()
 eventHandler event = case event of
-  MessageCreate m -> when (isPing m && not (fromBot m) && isValidRoll m) $ do
-    case unpack (messageContent m) !! 5 of
-      ' ' -> do
-        threadDelay (2 * 10 ^ 6)
-        roll1 m
-      'd' -> do
-        threadDelay (2 * 10 ^ 6)
-        roll2 min m
-      'a' -> do
-        threadDelay (2 * 10 ^ 6)
-        roll2 max m
-      _ -> do sendMessage m $ pack "invalid roll"
-  {- threadDelay (2 * 10^6)
-  roll <- newAndRoll m
-  void $ restCall (R.CreateMessage (messageChannelId m)  $ makePretty roll)
-  if isAdvantageOrDis m
-    then do
-      roll <- newAndRoll m
-      void $ restCall (R.CreateMessage (messageChannelId m)  $ makePretty roll)
-    else do return () -}
+  MessageCreate m -> when (isPing m && not (fromBot m)) $ do
+    case parseRoll . messageContent $ m of
+      Left peb -> sendMessage m . pack . errorBundlePretty $ peb
+      Right ro -> do
+        res <- liftIO . runRoll $ ro
+        sendMessage m . pack $ "You rolled: " ++ show res
   _ -> return ()
-
-roll1 m = case getRoll m of
-  Just r -> do
-    rolled <- applyRolls r
-    sendMessage m . pack $ "You rolled: " ++ show rolled
-  Nothing -> do sendMessage m "Invalid Roll"
-
-roll2 combiner m = case getRoll m of
-  Just r -> do
-    rolled1 <- applyRolls r
-    rolled2 <- applyRolls r
-    sendMessage m . pack $ "You rolled: " ++ show rolled1 ++ " and " ++ show rolled2
-    sendMessage m . pack $ "Final Result: " ++ show (combiner rolled1 rolled2)
-  Nothing -> do sendMessage m "Invalid Roll"
 
 sendMessage input responce = void $ restCall (R.CreateMessage (messageChannelId input) responce)
 
