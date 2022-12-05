@@ -11,7 +11,6 @@ import Discord.Types
 import Roller (parseRoll, runRoll)
 import Text.Megaparsec (errorBundlePretty)
 import UnliftIO (liftIO)
-import UnliftIO.Concurrent
 
 main :: IO ()
 main = startClient

@@ -62,6 +62,7 @@ test-suite Dumb-Bot-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      ParseSpec
       Paths_Dumb_Bot
   hs-source-dirs:
       test
@@ -71,6 +72,8 @@ test-suite Dumb-Bot-test
     , base >=4.7 && <5
     , containers
     , discord-haskell
+    , hspec
+    , hspec-megaparsec
     , megaparsec
     , random
     , text

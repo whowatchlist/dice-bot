@@ -54,3 +54,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - Dumb-Bot
+    - hspec
+    - hspec-megaparsec

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Roller where
+module Roller (parseRoll, runRoll, roll, Roll (..), Dice (..)) where
 
 import Control.Monad (replicateM)
 import Data.Maybe (fromMaybe)
@@ -11,24 +11,24 @@ import Text.Megaparsec (Parsec, choice, optional, parse, try)
 import Text.Megaparsec.Char (char, string)
 import qualified Text.Megaparsec.Char.Lexer as L
 
-data Dice = D4 | D6 | D8 | D10 | D12 | D20 | D100 deriving (Show)
+data Dice = D4 | D6 | D8 | D10 | D12 | D20 | D100 deriving (Show, Eq)
 
-diceToInt :: Num p => Dice -> p
-diceToInt D4 = 4
-diceToInt D6 = 6
-diceToInt D8 = 8
-diceToInt D10 = 10
-diceToInt D12 = 12
-diceToInt D20 = 20
-diceToInt D100 = 100
+diceToNum :: Num p => Dice -> p
+diceToNum D4 = 4
+diceToNum D6 = 6
+diceToNum D8 = 8
+diceToNum D10 = 10
+diceToNum D12 = 12
+diceToNum D20 = 20
+diceToNum D100 = 100
 
-data Roll = Roll Int Int Dice deriving (Show)
+data Roll = Roll Int Int Dice deriving (Show, Eq)
 
 runRoll :: Roll -> IO Int
 runRoll (Roll c n d) = comb <$> rolls
   where
     comb l = c + sum l
-    rolls = replicateM n $ uniformRM (1, diceToInt d) globalStdGen
+    rolls = replicateM n $ uniformRM (1, diceToNum d) globalStdGen
 
 type Parser = Parsec Void Text
 
