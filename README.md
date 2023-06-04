@@ -1,1 +1,1 @@
-# Dumb-Bot
+# Discord Chat bot
